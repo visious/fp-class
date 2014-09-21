@@ -49,7 +49,8 @@ avg3 :: Double -> Double -> Double -> Double
 avg3 a b c = (a+b+c)/3
 
 {-
-   Результаты проверки:
+После определения функции avg3 этот файл следует перезагрузить. Для этого в ghci необходимо выполнить
+команду :reload (или :r).
 
 > avg3 12.5 42.1 72.6
 42.4
@@ -133,7 +134,7 @@ if 2 > 3 then 7 else 5 :: Num a => a
 -- 5) Объявление функций (2)
 
 -- а) Удвоение значения заданного числа
--- (объясните смысл типовой аннотации: Тип функции: параметр типа "a", где "a" принадлежит классу типов Num, и результат типа "a")
+-- (объясните смысл типовой аннотации:  функция принимает один параметр типа a и возвращает результат типа a, где a принадлежит классу типов Num,)
 double :: Num a => a -> a
 double a = a*2
 
@@ -145,16 +146,16 @@ triple a = a*3
 -- в) Определение наибольшего из трёх заданных целых чисел (можно воспользоваться стандартной
 --    двухаргументной функцией max).
 max3 :: Ord a => a -> a -> a -> a
-max3 = undefined
+max3 a b c = max (max a b) c
 
 {-
   Проверка:
 > max3 87 34 209
-???
+209
 > max3 22 28 30
-???
+30
 > max3 12 25 (-7)
-???
+25
 
 -}
 
@@ -162,19 +163,50 @@ max3 = undefined
 -- (пользоваться стандартными логическими операциями не следует, обратите внимание на
 --  образцы параметров функции, последняя строка -- "во всех остальных случаях").
 bothTrue :: Bool -> Bool -> Bool
-bothTrue True True = undefined
-bothTrue _  _ = undefined
+bothTrue True True = True
+bothTrue _  _ = False
 
+{-
+> bothTrue (5>4) (10<11)
+True
+> bothTrue (5>4) (10>11)
+False
+> bothTrue (5<4) (10<11)
+False
+> bothTrue (5<4) (10>11)
+False
+-}
 
 -- д) Функция, возвращающая True, если только один из её аргументов равен True,
 -- и False в противном случае (пользоваться стандартными логическими операциями не следует).
 oneTrue :: Bool -> Bool -> Bool
-oneTrue = undefined
+oneTrue False True = True
+oneTrue True False = True
+oneTrue _ _ = False
+
+{-
+> oneTrue (5>4) (10<11)
+False
+> oneTrue (5>4) (10>11)
+True
+> oneTrue (5<4) (10<11)
+True
+> oneTrue (5<4) (10>11)
+False
+-}
 
 -- е) Дана температура в градусах Фаренгейта. Вычислить соответствующую температуру
 -- в градусах Цельсия.
 f2c :: Double -> Double
-f2c = undefined
+f2c x = (x - 32) * 5 / 9;
+
+{-
+> f2c 212
+100.0
+> f2c 0
+-17.77777777777778
+
+-}
 
 {-
    ж) Найти наибольший общий делитель двух целых чисел, пользуясь
@@ -182,15 +214,39 @@ f2c = undefined
       НОД(a, b) = НОД(b, a mod b), если b ≠ 0; 
       НОД(a, 0) = a.
 -}
--- gcd' :: ???
-gcd' = undefined
+-- gcd' :: Int -> Int -> Int
+gcd' a 0 = a
+gcd' a b = gcd' b (a `mod` b)
+
+{-
+> gcd' 27 18
+9
+> gcd' 345 25
+5
+-}
+-- 
 
 -- з) Функция, возвращающая название дня недели по его номеру (от 1 до 7),
 --    если номер неправильный, генерируется исключение (функция error).
+-- В реализации следует пользоваться сопоставлением с образцами.
 dayOfWeek :: Int -> String
-dayOfWeek = undefined
+dayOfWeek 1 = "Monday"
+dayOfWeek 2 = "Tuesday"
+dayOfWeek 3 = "Wednesday"
+dayOfWeek 4 = "Thursday"
+dayOfWeek 5 = "Friday"
+dayOfWeek 6 = "Saturday"
+dayOfWeek 7 = "Sunday"
+dayOfWeek n = error "It's not a day of week!"
+  
+{-
 
+> dayOfWeek 3
+"Wednesday"
+> dayOfWeek 8
+"Error!"
 
+-}
 -- Далее типовые аннотации, если их нет, следует писать самостоятельно.
 
 -- 6) Условное определение функции
@@ -210,12 +266,35 @@ sign a
           4,    если x ≥ 2.
 -}
 
-eval_f = undefined
-
+eval_f x 
+   | x <= 0 = -x
+   | x >= 2 = 4
+   | otherwise = x * x
+   
+{- 
+> eval_f (-5)
+5
+> eval_f 1.5
+2.25
+> eval_f 5
+4
+-}
+   
 -- б) Написать функцию, возвращающую текстовую характеристику ("hot", "warm", "cool", "cold")
 -- по заданному значению температуры в градусах Цельсия.
 describeTemperature :: Double -> String
-describeTemperature = undefined
+describeTemperature t
+   | t < 10 = "cold"
+   | t < 20 = "cool"   
+   | t < 30 = "warm"
+   | otherwise = "hot"
+   
+{-
+> describeTemperature 25
+"warm" 
+> describeTemperature 0
+"cold"
+-}
 
 {- 
    в) (*) Дан список температур в градусах Фаренгейта. Вывести для каждого значения
@@ -237,33 +316,116 @@ sum_n n
   | otherwise = error "n should be >= 1"
 
 -- а) Вычислить сумму всех целых чисел от a до b включительно.
-sum_ab = undefined
-
+sum_ab :: Int -> Int -> Int
+sum_ab a b 
+   | b == a = a
+   | b > a = a + (sum_ab (a+1) b)
+   | otherwise = error " b < a !!!"
+   
+{-
+> sum_ab 2 5
+14
+> sum a_b 3 2
+*** Exception: b < a !!! 
+-}   
 {-
    б) Числовая последовательность определяется следующим образом:
       a1 = 1, a2 = 2, a3 = 3, a_k = a_{k−1} + a_{k−2} − 2*a_{k−3}, k = 4, 5, ...
       Вычислить её n-й элемент.
 -}
-eval_a_n = undefined
+eval_a_n :: Int -> Int
+eval_a_n 1 = 1
+eval_a_n 2 = 2
+eval_a_n 3 = 3
+eval_a_n k 
+   | k < 1 = error "k should be > 1 !!!"
+   | otherwise = eval_a_n(k-1) + eval_a_n(k-2) - 2*eval_a_n(k-3) 
 
+{-
+> eval_a_n 4
+3
+// 3+2-2*1=3
+> eval_a_n 5
+2
+//3+3-2*2=2
+-}
+   
 -- в) Вычислить, пользуясь рекурсией, n-ю степень числа a (n - целое):
-pow = undefined
+pow :: Double -> Int -> Double
+pow 0 _ = 0
+pow 1 _ = 1
+pow _ 0 = 1
+pow a n
+   | n > 0 = a * (pow a (n-1)) 
+   | otherwise = 1 / (pow a (-n))
 
+{-
+> pow 5 2
+25
+-}
+   
 -- г) Пользуясь ранее написанной функцией pow, вычислить сумму: 1^k + 2^k + ... + n^k.
-sum_nk = undefined
+sum_nk :: Double -> Int -> Double
+sum_nk n k 
+   | n == 0 = 0 
+   |otherwise = pow n k + sum_nk (n-1) k
+
+{-
+> sum_nk 3 2
+14.9
+-}
 
 -- д) Сумма факториалов чисел от 1 до n.
+sum_fact :: Int -> Int
 sum_fact 1 = 1
-sum_fact n = undefined
+sum_fact n = fact(n) + sum_fact(n-1)
   where
-    fact n = undefined
+    fact 1 = 1
+    fact n = n * fact(n-1)
 
+{-
+> sum_fact 2
+3
+> sum_fact 3
+9
+> sum_fact 5
+153
+-}	
+	
 -- е) Количество цифр целого числа
-number_digits = undefined
+number_digits :: Int -> Int
+number_digits 0 = 0
+number_digits n
+   | n > 0 = number_digits(n `div` 10) + 1
+   | otherwise = number_digits((-n))
 
+{-
+> number_digits 43535
+5
+> number_digits (-678)
+3
+> number_digits 9
+1
+-}   
+   
 -- ж) Проверить, является ли заданное число простым.
-isPrime = undefined
+isPrime :: Int -> Bool
+isPrime n
+   | n <= 1 = error "Should be greater than 1!" 
+   | otherwise = checkPrime 2
+   where 
+     checkPrime k     
+	  | k * k > n = True
+      | n `mod` k == 0 = False
+      | otherwise = checkPrime(k+1)
 
+{-
+> isPrime 13
+True
+> isPrime 27
+False
+-}	  
+	  
 -- 8) Разное
 
 {-
@@ -273,7 +435,14 @@ isPrime = undefined
   не делятся на 400 (например, годы 300, 1300 и 1900 не являются високосными,
   а 1200 и 2000 — являются).
 -}
-
-nDays year = undefined
+nDays :: Int -> Int
+nDays year 
+   | year < 1582 = error "Other rules of specification!"
+   | otherwise = if isLeap then 366 else 365
   where
-    isLeap = undefined
+    isLeap = (year `mod` 4 == 0) && (year `mod` 100 /= 0) || (year `mod` 400 == 0) 
+
+{-
+> nDays 2014
+365
+-}
