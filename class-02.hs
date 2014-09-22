@@ -172,33 +172,46 @@ findElem (x:xs) n
 
 -- в) [a] -> Int -> [a]
 deleteElem :: [a] -> Int -> [a]
-deleteElem [] n = []
-deleteElem (x:y:xs) n 
-    | n < 1 = error "Index start from 1!" 
-	| n == 1 = (y:xs)
-	| otherwise = deleteElem (y:xs) n
+deleteElem [] 0 = []
+deleteElem (x:xs) n 
+    | n < 0 = error "Count of elements can't be negative!" 
+	| n == 1 = xs
+    | n >= length(xs) = []
+	| otherwise = deleteElem xs (n-1)
 
 -- г) a -> Int -> [a]
---powList :: a -> Int -> [a]
---powList _ 0 = [1]
---powList 1 _ = [1]
---powList 0 _ = [0]
---powList a n = powList a (n-1) : a
-
+replicateList :: a -> Int -> [a]
+replicateList _ 0 = []
+replicateList a n 
+    | n == 1 = [a]
+    | otherwise = a : replicateList a (n-1)
+	
 -- д) [a] -> [a] -> [a]
 insertList :: [a] -> [a] -> [a]
 insertList [] ys = ys
 insertList xs [] = xs
-insertList (x:xs) (y:ys) = x : y : insertList xs ys
-
+insertList [x] [y] = [x,y]
+insertList (x:xs) (y:ys) = x : y : insertList xs ys 
 
 -- е) Eq a => [a] -> [[a]]
-
-
+groupList :: Eq a => [a] -> [[a]]
+groupList [] = [[]]
+groupList [x] = [[x]]
+groupList (x:y:xs) = if x==y then [x,y]: groupList xs else [x] : groupList(y:xs)
 
 -- ж) [a] -> [(Int, a)]
 
+pairOfIndAndElem :: [a] -> [(Int, a)]
+pairOfIndAndElem [] = []
+pairOfIndAndElem xs = pairOfIndAndElem' xs 1
+    where 
+    pairOfIndAndElem' :: [a] -> Int -> [(Int, a)]
+    pairOfIndAndElem' [] n = []
+    pairOfIndAndElem' (x:xs) n = (n,x) : pairOfIndAndElem' xs (n+1)
+	
 
 -- з) Eq a => [a] -> [a]
-
+reverseList :: Eq a => [a] -> [a]
+reverseList [] = []
+reverseList (x:xs) = reverseList xs ++[x] 
 
